@@ -19,6 +19,7 @@ type DomainCounter struct {
 	Bounced   int
 	Status    string
 }
+
 const URI_MONGODB = "mongodb://localhost:27017"
 const URL_PATH_DELVIERED = "/events/{domain}/delivered"
 const URL_PATHS_BOUNCED = "/events/{domain}/bounced"
@@ -96,10 +97,10 @@ func HandleDeliveredEvent(w http.ResponseWriter, r *http.Request) {
 	if err == mongo.ErrNoDocuments {
 		// Initialize the domain counter if it doesn't exist
 		domainCounter = DomainCounter{
-			Domain:     domain,
-			Delivered:  0,
-			Bounced:    0,
-			Status:     "unknown",
+			Domain:    domain,
+			Delivered: 0,
+			Bounced:   0,
+			Status:    "unknown",
 		}
 	} else if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -125,7 +126,6 @@ func HandleDeliveredEvent(w http.ResponseWriter, r *http.Request) {
 
 	w.WriteHeader(http.StatusOK)
 }
-
 
 /*
 below we use the mux package to extract the domain variable from the URL path, and validate it to
@@ -221,10 +221,9 @@ func HandleBouncedEvent(w http.ResponseWriter, r *http.Request) {
 	// Use the test database
 	db := client.Database(DataBase)
 
-
 	// Find the domain counter in the collection
 	var domainCounter DomainCounter
-	err = db.Collection(Collection).FindOne(context.TODO(),bson.M{"domain": domain}).Decode(&domainCounter)
+	err = db.Collection(Collection).FindOne(context.TODO(), bson.M{"domain": domain}).Decode(&domainCounter)
 	if err == mgo.ErrNotFound {
 		// Initialize the domain counter if it doesn't exist
 		domainCounter = DomainCounter{
@@ -247,7 +246,7 @@ func HandleBouncedEvent(w http.ResponseWriter, r *http.Request) {
 		"$set": &domainCounter,
 	}
 	// Save the updated domain counter to the collection
-	_, err = db.Collection(Collection).UpdateOne(context.TODO(),bson.M{"domain": domain}, update,opts)
+	_, err = db.Collection(Collection).UpdateOne(context.TODO(), bson.M{"domain": domain}, update, opts)
 	if err != nil {
 		http.Error(w, "Error updating domain in MongoDB: "+err.Error(), http.StatusInternalServerError)
 		return

@@ -13,7 +13,9 @@ import (
 	"testing"
 	"time"
 )
+
 const testDomain = "example.com"
+
 /*
 Herethe function first establishes a connection to the MongoDB server running on localhost,
 then it opens a session to the database. Next, it  we use mongo driver to create connections. (we can use the Dial function from the mgo package to connect to the MongoDB server as well).
@@ -176,7 +178,7 @@ func TestHandleBouncedEvent(t *testing.T) {
 	_, _ = db.Collection(Collection).DeleteMany(context.TODO(), bson.D{})
 	// Insert a test document for the domain testDomain
 	_, err = db.Collection(Collection).InsertOne(context.TODO(), bson.M{
-		"domain":   testDomain,
+		"domain":    testDomain,
 		"delivered": 1001,
 		"bounced":   0,
 		"status":    "catch-all",
